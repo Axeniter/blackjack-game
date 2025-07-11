@@ -4,23 +4,25 @@ using UnityEngine.Events;
 
 public class Person : MonoBehaviour
 {
-    public List<Card> Cards { get; set; }
+    public List<Card> Cards { get; set; } = new List<Card>();
+    [SerializeField] private Vector3 cardPlace;
+    public Vector3 CardPlace => cardPlace;
     private int points;
     public UnityEvent OnBust;
 
-    public void CountPoints()
+    private void CountPoints()
     {
         points = 0;
         List<Card> aces = new List<Card>();
         foreach (Card card in Cards)
         {
-            if (card.isAce)
+            if (card.IsAce)
             {
                 aces.Add(card);
             }
             else
             {
-                points += card.value;
+                points += card.Value;
             }
         }
         if (aces.Count > 0)
@@ -44,6 +46,6 @@ public class Person : MonoBehaviour
     public void CardTake(Card card)
     {
         Cards.Add(card);
-
+        CountPoints();
     }
 }

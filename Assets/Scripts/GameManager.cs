@@ -5,10 +5,28 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private Player player;
     [SerializeField] private Dealer dealer;
-    [SerializeField] private List<Card> deck;
+    [SerializeField] private List<GameObject> deck;
+    private List<GameObject> curentCards = new();
 
     public void GameStart()
     {
+        GiveCard(player);
+        GiveCard(player);
+    }
 
+    public void Start()
+    {
+        GameStart();
+    }
+
+    public void GiveCard(Person person)
+    {
+        GameObject card = deck[Random.Range(0, deck.Count)];
+        curentCards.Add(card);
+        Quaternion rotate = Quaternion.Euler(90f, 0,0);
+        Vector3 pos = person.CardPlace;
+        pos.x += person.Cards.Count * 0.3f;
+        Instantiate(card, pos, rotate);
+        person.CardTake(card.GetComponent<Card>());
     }
 }

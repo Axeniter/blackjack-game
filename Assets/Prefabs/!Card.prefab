@@ -97,8 +97,9 @@ GameObject:
   - component: {fileID: 9056768169637856124}
   - component: {fileID: 3154709617426379792}
   - component: {fileID: 4119953040656365708}
+  - component: {fileID: 6461679242520954507}
   m_Layer: 0
-  m_Name: Card
+  m_Name: '!Card'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -170,6 +171,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6461679242520954507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4393670125908169661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83395e3afb024df45bccb2ebe0bf43d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  value: 0
+  isAce: 0
 --- !u!1 &5280860166031457216
 GameObject:
   m_ObjectHideFlags: 0

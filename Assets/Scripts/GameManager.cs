@@ -1,12 +1,36 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private Player player;
     [SerializeField] private Dealer dealer;
     [SerializeField] private List<GameObject> deck;
+    [SerializeField] private GameObject chip;
+    [SerializeField] private Vector3 chipPlace;
     private List<GameObject> curentCards = new();
+    private List<GameObject> curentChips = new();
+
+    
+    public int Bet { get; set; }
+
+    public void GenerateChips(int chips)
+    {
+        float delay = 2 / chips;
+        StartCoroutine(ChipSpawn(delay,chips));
+    }
+
+    private IEnumerator ChipSpawn(float delay, int chips)
+    {
+        int count = 0;
+        while (count < chips)
+        {
+            count++;
+            Instantiate(chip, chipPlace,Quaternion.identity);
+            yield return new WaitForSeconds(delay);
+        }
+    }
 
     public void GameStart()
     {

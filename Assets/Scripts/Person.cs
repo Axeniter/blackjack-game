@@ -9,6 +9,7 @@ public class Person : MonoBehaviour
     public Vector3 CardPlace => cardPlace;
     private int points;
     public UnityEvent OnBust;
+    public UnityEvent<int> OnPointsChange;
 
     private void CountPoints()
     {
@@ -36,7 +37,7 @@ public class Person : MonoBehaviour
                 points += 10;
             }
         }
-
+        OnPointsChange?.Invoke(points);
         if (points > 21)
         {
             OnBust?.Invoke();

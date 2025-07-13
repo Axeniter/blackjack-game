@@ -3,13 +3,15 @@ using UnityEngine.Events;
 
 public class Player : Person
 {
-    [SerializeField] private int chips;
-    public int Chips => chips;
+    [field: SerializeField] public int Chips { get; set; }
+
     public UnityEvent<int> OnBet;
+    public UnityEvent<int> OnDouble;
+    public UnityEvent<int> OnSplit;
 
     public void Bet(int bet)
     {
-        chips -= bet;
+        Chips -= bet;
         OnBet?.Invoke(bet);
     }
 }

@@ -4,12 +4,28 @@ using UnityEngine.Events;
 
 public class Person : MonoBehaviour
 {
+    public class Hand
+    {
+        public List<GameObject> CardsObjects { get; set; }
+        public List<Card> Cards { get; set; }
+        public int Bet {  get; set; }
+
+        public Hand(int bet)
+        {
+            CardsObjects = new List<GameObject>();
+            Cards = new List<Card>();
+            Bet = bet;
+        }
+    }
+    public List<Hand> Hands { get; set; }
     public List<Card> Cards { get; set; } = new List<Card>();
     [SerializeField] private Vector3 cardPlace;
     public Vector3 CardPlace => cardPlace;
-    private int points;
-    public UnityEvent OnBust;
+    protected int points;
+    public UnityEvent<Person> OnBust;
     public UnityEvent<int> OnPointsChange;
+    public UnityEvent<Person> OnCardTake;
+    public UnityEvent<int> OnStand;
 
     private void CountPoints()
     {
@@ -40,13 +56,13 @@ public class Person : MonoBehaviour
         OnPointsChange?.Invoke(points);
         if (points > 21)
         {
-            OnBust?.Invoke();
+            OnBust?.Invoke(this);
         }
     }
 
-    public void CardTake(Card card)
+    public void CardTake()
     {
-        Cards.Add(card);
+        OnCardTake?.Invoke(this);
         CountPoints();
     }
 }

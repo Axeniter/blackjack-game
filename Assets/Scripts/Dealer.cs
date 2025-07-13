@@ -1,16 +1,18 @@
+using System.Collections;
 using UnityEngine;
 
 public class Dealer : Person
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public IEnumerator DealerMove()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        while (points < 17)
+        {
+            CardTake();
+            yield return new WaitForSeconds(0.5f);
+        }
+        if (points > 21)
+        {
+            OnBust?.Invoke(this);
+        }
     }
 }

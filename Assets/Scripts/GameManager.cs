@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     public void GenerateChips(int chips)
     {
-        float delay = 2 / chips;
+        float delay = 2f / chips;
         StartCoroutine(ChipSpawn(delay,chips));
     }
 
@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
         int count = 0;
         while (count < chips)
         {
+            curentChips.Add(Instantiate(chip, chipPlace, Quaternion.identity));
             count++;
-            Instantiate(chip, chipPlace,Quaternion.identity);
             yield return new WaitForSeconds(delay);
         }
     }
@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     {
         GiveCard(player);
         GiveCard(player);
+        GiveCard(dealer);
     }
 
     public void Start()
@@ -49,7 +50,7 @@ public class GameManager : MonoBehaviour
         curentCards.Add(card);
         Quaternion rotate = Quaternion.Euler(90f, 0,0);
         Vector3 pos = person.CardPlace;
-        pos.x += person.Cards.Count * 0.3f;
+        pos.x += person.Cards.Count * 0.75f;
         Instantiate(card, pos, rotate);
         person.CardTake(card.GetComponent<Card>());
     }

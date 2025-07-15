@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
-    private List<GameObject> curentChips = new();
+    private List<GameObject> currentChips = new();
     private bool playersTurn;
 
     [SerializeField] private Player player;
@@ -15,8 +15,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector3 chipPlace;
     [SerializeField] private float delay;
 
-    //public UnityEvent OnTurn;
     public UnityEvent<string> OnGameOver;
+    public UnityEvent OnGameReset;
+    public UnityEvent OnBankrupt;
 
     public void GenerateChips(int chips)
     {
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour
             int count = 0;
             while (count < chips)
             {
-                curentChips.Add(Instantiate(chip, chipPlace, Quaternion.identity));
+                currentChips.Add(Instantiate(chip, chipPlace, Quaternion.identity));
                 count++;
                 yield return new WaitForSeconds(delay);
             }
@@ -34,19 +35,18 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ChipSpawn(delay,chips));
     }
 
-    public void CardSpawn(Person person, GameObject card)
+    public GameObject CardSpawn(Person person, GameObject card)
     {
         Vector3 pos = person.CardPlace;
         pos.x += person.CurrentHand.Cards.Count * 0.75f;
         Quaternion rotate = Quaternion.Euler(90f, 0, 0);
-        Instantiate(card, pos, rotate);
+        return Instantiate(card, pos, rotate);
 
     }
     public void GiveCard(Person person)
     {
         GameObject card = deck[Random.Range(0, deck.Count)];
-        person.CurrentHand.Take(card);
-        CardSpawn(person, card);
+        person.CurrentHand.Take(CardSpawn(person, card));
     }
 
     public void StartGame(int bet)
@@ -59,8 +59,10 @@ public class GameManager : MonoBehaviour
             GiveCard(player);
             yield return new WaitForSeconds(delay);
             GiveCard(player);
-            yield return new WaitForSeconds(delay);
-            player.ReadyForTurn();
+            if (player.CurrentHand.Points != 21)
+            {
+                player.ReadyForTurn();
+            }
         }
         player.Bet(bet);
         player.CurrentHand = player.MakeHand(bet);
@@ -193,20 +195,31 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        if (player.Chips >= 1)
+        {
+            ResetGame();
+        }
+        else
+        {
+            OnBankrupt?.Invoke();
+        }
     }
     public void ResetGame()
     {
+        IEnumerator Reseting()
+        {
+            yield return new WaitForSeconds(1f);
+            foreach (GameObject chip in currentChips)
+            {
+                Destroy(chip);
+            }
+            currentChips.Clear();
 
+            dealer.ResetHand();
+            player.ResetHand();
+
+            OnGameReset?.Invoke();
+        }
+        StartCoroutine(Reseting());
     }
-
-    //public void ReadyForTurn()
-    //{
-    //    IEnumerator Wait()
-    //    {
-    //        yield return new WaitForSeconds(delay);
-    //        OnTurn?.Invoke();
-    //    }
-    //    StartCoroutine(Wait());
-    //}
-
 }

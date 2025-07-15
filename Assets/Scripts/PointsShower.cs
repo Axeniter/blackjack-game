@@ -7,7 +7,13 @@ public class PointsShower : MonoBehaviour
     [SerializeField] private Person person;
     [SerializeField] private int handNum;
     private Person.Hand hand;
-    private void Awake()
+
+    public void ChangePoints(int points)
+    {
+        pointText.text = points.ToString();
+    }
+
+    private void OnEnable()
     {
         if (person is Player)
         {
@@ -28,20 +34,12 @@ public class PointsShower : MonoBehaviour
         {
             hand = person.CurrentHand;
         }
-    }
-
-    public void ChangePoints()
-    {
-        pointText.text = hand.Points.ToString();
-    }
-
-    private void OnEnable()
-    {
         hand.OnPointsChange += ChangePoints;
     }
 
     private void OnDisable()
     {
+        ChangePoints(0);
         hand.OnPointsChange -= ChangePoints;
     }
 

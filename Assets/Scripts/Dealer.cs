@@ -3,14 +3,15 @@ using UnityEngine;
 
 public class Dealer : Person
 {
+    [SerializeField] private float delay;
     public void DealerTake()
     {
         IEnumerator DealerMove()
         {
             while (CurrentHand.Points < 17)
             {
+                yield return new WaitForSeconds(delay);
                 Hit();
-                yield return new WaitForSeconds(0.5f);
             }
             if (CurrentHand.Points < 21)
             {

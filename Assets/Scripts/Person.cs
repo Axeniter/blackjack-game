@@ -7,13 +7,13 @@ public class Person : MonoBehaviour
 {
     public class Hand
     {
-        public List<GameObject> Cards { get; set; }
-        public int Bet { get; set; }
+        public List<GameObject> Cards { get; private set; }
+        public int Bet { get; private set; }
         public int Points { get; private set; }
         public bool Busted { get; private set; }
 
         public event Action OnBust;
-        public event Action OnPointsChange;
+        public event Action<int> OnPointsChange;
         public event Action OnBlackJack;
 
         public Hand(int bet = 0, List<GameObject> cards = null)
@@ -28,6 +28,11 @@ public class Person : MonoBehaviour
         {
             Cards.Add(card);
             CountPoints();
+        }
+
+        public void DoubleBet()
+        {
+            Bet *= 2;
         }
 
         private void CountPoints()
@@ -57,7 +62,7 @@ public class Person : MonoBehaviour
                     Points += 10;
                 }
             }
-            OnPointsChange?.Invoke();
+            OnPointsChange?.Invoke(Points);
             if (Points > 21)
             {
                 Busted = true;
@@ -84,9 +89,10 @@ public class Person : MonoBehaviour
 
     public virtual void Stand()
     {
-        OnTurnsEnd?.Invoke();
         CurrentHand.OnBust -= Stand;
         CurrentHand.OnBlackJack -= Stand;
+        StopAllCoroutines();
+        OnTurnsEnd?.Invoke();
     }
 
     public Hand MakeHand(int bet = 0, List<GameObject> cards = null)
@@ -95,5 +101,20 @@ public class Person : MonoBehaviour
         hand.OnBust += Stand;
         hand.OnBlackJack += Stand;
         return hand;
+    }
+
+    public void ClearTable(Hand hand)
+    {
+        foreach (GameObject card in hand.Cards)
+        {
+            Destroy(card);
+        }
+        hand.Cards.Clear();
+    }
+
+    public virtual void ResetHand()
+    {
+        ClearTable(CurrentHand);
+        CurrentHand = null;
     }
 }

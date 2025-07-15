@@ -8,9 +8,7 @@ public class Player : Person
     [field: SerializeField] public int Chips { get; private set; }
 
     public UnityEvent<int> OnBet;
-    public UnityEvent OnSplit;
     public UnityEvent OnTurn;
-    public UnityEvent OnStand;
 
     public Hand SplitedHand1 { get; private set; } = null;
     public Hand SplitedHand2 { get; private set; } = null;
@@ -28,15 +26,14 @@ public class Player : Person
         SplitedHand1 = MakeHand(CurrentHand.Bet, new List<GameObject> { CurrentHand.Cards[0] });
         SplitedHand2 = MakeHand(CurrentHand.Bet, new List<GameObject> { CurrentHand.Cards[1] });
         CurrentHand = SplitedHand1;
-        OnSplit?.Invoke();
         ReadyForTurn();
     }  
 
     public void Double()
     {
         Bet(CurrentHand.Bet);
-        CurrentHand.Bet *= 2;
-        Hit();
+        CurrentHand.DoubleBet();
+        base.Hit();
         if (CurrentHand.Points < 21)
         {
             Stand();
@@ -54,7 +51,9 @@ public class Player : Person
 
     public override void Stand()
     {
-        OnStand?.Invoke();
+        StopAllCoroutines();
+        CurrentHand.OnBust -= Stand;
+        CurrentHand.OnBlackJack -= Stand;
         if (Splited)
         {
             if (CurrentHand == SplitedHand1)
@@ -71,8 +70,6 @@ public class Player : Person
         {
             OnTurnsEnd?.Invoke();
         }
-        CurrentHand.OnBust -= Stand;
-        CurrentHand.OnBlackJack -= Stand;
     }
 
     public void TakeChips(int chips)
@@ -88,5 +85,20 @@ public class Player : Person
             OnTurn?.Invoke();
         }
         StartCoroutine(Wait());
+    }
+
+    public override void ResetHand()
+    {
+        if (!Splited)
+        {
+            base.ResetHand();
+        }
+        else
+        {
+            ClearTable(SplitedHand1);
+            ClearTable(SplitedHand2);
+            SplitedHand1 = null;
+            SplitedHand2 = null;
+        }
     }
 }

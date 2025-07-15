@@ -11,13 +11,15 @@ public class Person : MonoBehaviour
         public int Bet { get; private set; }
         public int Points { get; private set; }
         public bool Busted { get; private set; }
+        public readonly Vector3 CardsPlace;
 
         public event Action OnBust;
         public event Action<int> OnPointsChange;
         public event Action OnBlackJack;
 
-        public Hand(int bet = 0, List<GameObject> cards = null)
+        public Hand(Vector3 cardsPlace, int bet = 0, List<GameObject> cards = null)
         {
+            CardsPlace = cardsPlace;
             Busted = false;
             Cards = cards ?? new();
             Bet = bet;
@@ -95,9 +97,9 @@ public class Person : MonoBehaviour
         OnTurnsEnd?.Invoke();
     }
 
-    public Hand MakeHand(int bet = 0, List<GameObject> cards = null)
+    public Hand MakeHand(Vector3 cardsPlace, int bet = 0, List<GameObject> cards = null)
     {
-        Hand hand = new(bet, cards);
+        Hand hand = new(cardsPlace, bet, cards);
         hand.OnBust += Stand;
         hand.OnBlackJack += Stand;
         return hand;

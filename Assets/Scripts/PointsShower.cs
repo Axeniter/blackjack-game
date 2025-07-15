@@ -34,12 +34,12 @@ public class PointsShower : MonoBehaviour
         {
             hand = person.CurrentHand;
         }
+        ChangePoints(hand.Points);
         hand.OnPointsChange += ChangePoints;
     }
 
     private void OnDisable()
     {
-        ChangePoints(0);
         hand.OnPointsChange -= ChangePoints;
     }
 

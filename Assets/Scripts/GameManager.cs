@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject CardSpawn(Person person, GameObject card)
     {
-        Vector3 pos = person.CardPlace;
+        Vector3 pos = person.CurrentHand.CardsPlace;
         pos.x += person.CurrentHand.Cards.Count * 0.75f;
         Quaternion rotate = Quaternion.Euler(90f, 0, 0);
         return Instantiate(card, pos, rotate);
@@ -65,8 +65,8 @@ public class GameManager : MonoBehaviour
             }
         }
         player.Bet(bet);
-        player.CurrentHand = player.MakeHand(bet);
-        dealer.CurrentHand = dealer.MakeHand();
+        player.CurrentHand = player.MakeHand(player.CardPlace ,bet);
+        dealer.CurrentHand = dealer.MakeHand(dealer.CardPlace);
         StartCoroutine(GivingCards());
         playersTurn = true;
     }
@@ -77,13 +77,11 @@ public class GameManager : MonoBehaviour
         {
             if (!player.Splited && player.CurrentHand.Busted)
             {
-                StopAllCoroutines();
                 playersTurn = false;
                 GameOver();
             }
             else
             {
-                StopAllCoroutines();
                 playersTurn = false;
                 dealer.DealerTake();
             }
@@ -195,31 +193,32 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        if (player.Chips >= 1)
-        {
-            ResetGame();
-        }
-        else
-        {
-            OnBankrupt?.Invoke();
-        }
+        ResetGame();
     }
     public void ResetGame()
     {
         IEnumerator Reseting()
         {
-            yield return new WaitForSeconds(1f);
-            foreach (GameObject chip in currentChips)
+            yield return new WaitForSeconds(2.1f);
+            if (player.Chips <= 0)
             {
-                Destroy(chip);
+                OnBankrupt?.Invoke();
             }
-            currentChips.Clear();
+            else
+            {
+                foreach (GameObject chip in currentChips)
+                {
+                    Destroy(chip);
+                }
+                currentChips.Clear();
 
-            dealer.ResetHand();
-            player.ResetHand();
+                dealer.ResetHand();
+                player.ResetHand();
 
-            OnGameReset?.Invoke();
+                OnGameReset?.Invoke();
+            }
         }
+
         StartCoroutine(Reseting());
     }
 }

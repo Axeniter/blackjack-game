@@ -9,6 +9,7 @@ public class Player : Person
 
     public UnityEvent<int> OnBet;
     public UnityEvent OnTurn;
+    public UnityEvent OnSplit;
 
     public Hand SplitedHand1 { get; private set; } = null;
     public Hand SplitedHand2 { get; private set; } = null;
@@ -22,10 +23,16 @@ public class Player : Person
     
     public void Split()
     {
+        OnSplit?.Invoke();
         Bet(CurrentHand.Bet);
-        SplitedHand1 = MakeHand(CurrentHand.Bet, new List<GameObject> { CurrentHand.Cards[0] });
-        SplitedHand2 = MakeHand(CurrentHand.Bet, new List<GameObject> { CurrentHand.Cards[1] });
+        SplitedHand1 = MakeHand(CardPlace,CurrentHand.Bet, new List<GameObject> { CurrentHand.Cards[0] });
+        Vector3 posForSecondHand = CardPlace;
+        posForSecondHand.z += 1.5f;
+        SplitedHand2 = MakeHand(posForSecondHand, CurrentHand.Bet, new List<GameObject> { CurrentHand.Cards[1] });
+        SplitedHand1.Cards[0].transform.position = CardPlace;
+        SplitedHand2.Cards[0].transform.position = posForSecondHand;
         CurrentHand = SplitedHand1;
+        Splited = true;
         ReadyForTurn();
     }  
 

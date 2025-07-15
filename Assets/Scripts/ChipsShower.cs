@@ -6,8 +6,10 @@ public class ChipsShower : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private TMP_Text chipsText;
     [SerializeField] private TMP_Text betText;
+    private int currentBet;
     void OnEnable()
     {
+        currentBet = 0;
         ChangeChipsText();
     }
     
@@ -17,6 +19,7 @@ public class ChipsShower : MonoBehaviour
     }
     public void ChangeBetText(int bet)
     {
-        betText.text = "Ставка: " + bet;
+        currentBet += bet;
+        betText.text = "Ставка: " + currentBet;
     }
 }

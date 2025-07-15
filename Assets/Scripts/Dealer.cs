@@ -3,16 +3,20 @@ using UnityEngine;
 
 public class Dealer : Person
 {
-    public IEnumerator DealerMove()
+    public void DealerTake()
     {
-        while (points < 17)
+        IEnumerator DealerMove()
         {
-            CardTake();
-            yield return new WaitForSeconds(0.5f);
+            while (CurrentHand.Points < 17)
+            {
+                Hit();
+                yield return new WaitForSeconds(0.5f);
+            }
+            if (CurrentHand.Points < 21)
+            {
+                OnTurnsEnd?.Invoke();
+            }
         }
-        if (points > 21)
-        {
-            OnBust?.Invoke(this);
-        }
+        StartCoroutine(DealerMove());
     }
 }

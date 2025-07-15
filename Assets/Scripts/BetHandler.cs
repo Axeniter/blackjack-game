@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class BetHandler : MonoBehaviour
 {
     [SerializeField] private Player player;
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private Slider slider;
     [SerializeField] private TMP_Text text;
 
@@ -23,6 +24,6 @@ public class BetHandler : MonoBehaviour
 
     public void BetButton()
     {
-        player.Bet((int)slider.value);
+        gameManager.StartGame((int)slider.value);
     }
 }

@@ -1,68 +1,99 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 public class Person : MonoBehaviour
 {
     public class Hand
     {
-        public List<GameObject> CardsObjects { get; set; }
-        public List<Card> Cards { get; set; }
-        public int Bet {  get; set; }
+        public List<GameObject> Cards { get; set; }
+        public int Bet { get; set; }
+        public int Points { get; private set; }
+        public bool Busted { get; private set; }
 
-        public Hand(int bet)
+        public event Action OnBust;
+        public event Action OnPointsChange;
+        public event Action OnBlackJack;
+
+        public Hand(int bet = 0, List<GameObject> cards = null)
         {
-            CardsObjects = new List<GameObject>();
-            Cards = new List<Card>();
+            Busted = false;
+            Cards = cards ?? new();
             Bet = bet;
+            CountPoints();
+        }
+
+        public void Take(GameObject card)
+        {
+            Cards.Add(card);
+            CountPoints();
+        }
+
+        private void CountPoints()
+        {
+            Points = 0;
+            List<Card> aces = new();
+            foreach (GameObject obj in Cards)
+            {
+                Card card = obj.GetComponent<Card>();
+                if (card.IsAce)
+                {
+                    aces.Add(card);
+                }
+                else
+                {
+                    Points += card.Value;
+                }
+            }
+            if (aces.Count > 0)
+            {
+                foreach (Card card in aces)
+                {
+                    Points += 1;
+                }
+                if (Points <= 11)
+                {
+                    Points += 10;
+                }
+            }
+            OnPointsChange?.Invoke();
+            if (Points > 21)
+            {
+                Busted = true;
+                OnBust?.Invoke();
+            }
+            if (Points == 21)
+            {
+                OnBlackJack?.Invoke();
+            }
         }
     }
-    public List<Hand> Hands { get; set; }
-    public List<Card> Cards { get; set; } = new List<Card>();
-    [SerializeField] private Vector3 cardPlace;
-    public Vector3 CardPlace => cardPlace;
-    protected int points;
-    public UnityEvent<Person> OnBust;
-    public UnityEvent<int> OnPointsChange;
-    public UnityEvent<Person> OnCardTake;
-    public UnityEvent<int> OnStand;
 
-    private void CountPoints()
+    public Hand CurrentHand { get; set; }
+
+    [field: SerializeField] public Vector3 CardPlace { get; private set; }
+
+    public UnityEvent<Person> OnHit;
+    public UnityEvent OnTurnsEnd;
+
+    public virtual void Hit()
     {
-        points = 0;
-        List<Card> aces = new List<Card>();
-        foreach (Card card in Cards)
-        {
-            if (card.IsAce)
-            {
-                aces.Add(card);
-            }
-            else
-            {
-                points += card.Value;
-            }
-        }
-        if (aces.Count > 0)
-        {
-            foreach (Card card in aces)
-            {
-                points += 1;
-            }
-            if (points <= 11)
-            {
-                points += 10;
-            }
-        }
-        OnPointsChange?.Invoke(points);
-        if (points > 21)
-        {
-            OnBust?.Invoke(this);
-        }
+        OnHit?.Invoke(this);
     }
 
-    public void CardTake()
+    public virtual void Stand()
     {
-        OnCardTake?.Invoke(this);
-        CountPoints();
+        OnTurnsEnd?.Invoke();
+        CurrentHand.OnBust -= Stand;
+        CurrentHand.OnBlackJack -= Stand;
+    }
+
+    public Hand MakeHand(int bet = 0, List<GameObject> cards = null)
+    {
+        Hand hand = new(bet, cards);
+        hand.OnBust += Stand;
+        hand.OnBlackJack += Stand;
+        return hand;
     }
 }

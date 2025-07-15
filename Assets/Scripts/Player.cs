@@ -104,8 +104,7 @@ public class Player : Person
         {
             ClearTable(SplitedHand1);
             ClearTable(SplitedHand2);
-            SplitedHand1 = null;
-            SplitedHand2 = null;
+            Splited = false;
         }
     }
 }

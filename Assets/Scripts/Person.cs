@@ -111,12 +111,11 @@ public class Person : MonoBehaviour
         {
             Destroy(card);
         }
-        hand.Cards.Clear();
+        //hand.Cards.Clear();
     }
 
     public virtual void ResetHand()
     {
         ClearTable(CurrentHand);
-        CurrentHand = null;
     }
 }
